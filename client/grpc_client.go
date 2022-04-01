@@ -332,8 +332,10 @@ func (grpcClient *GrpcClient) Close(werr error) (rerr error) {
 	// 连接已关闭
 	<-grpcClient.closed
 
-	if rerr2 := grpcClient.handlerStreamClient.CloseSend(); rerr2 != nil && rerr == nil {
-		rerr = rerr2
+	if grpcClient.handlerStreamClient != nil {
+		if rerr2 := grpcClient.handlerStreamClient.CloseSend(); rerr2 != nil && rerr == nil {
+			rerr = rerr2
+		}
 	}
 
 	return

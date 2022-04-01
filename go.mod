@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/otamoe/go-library v0.3.17
-	github.com/otamoe/vptun-pb v0.4.0
+	github.com/otamoe/vptun-pb v0.4.3
 	github.com/shirou/gopsutil/v3 v3.22.2
 	github.com/spf13/viper v1.10.1
 	go.uber.org/atomic v1.9.0

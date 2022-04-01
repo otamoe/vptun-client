@@ -79,13 +79,13 @@ func (grpcClient *GrpcClient) requestTun() (err error) {
 		go grpcClient.Close(err)
 	}()
 	var n int
-	packet := make([]byte, device.DefaultMTU*2)
+	data := make([]byte, device.DefaultMTU*2)
 	for {
-		if n, err = grpcClient.tunDevice.Read(packet, 4); err != nil {
+		if n, err = grpcClient.tunDevice.Read(data, 4); err != nil {
 			return
 		}
 		b := make([]byte, n+4)
-		copy(b, packet)
+		copy(b, data)
 
 		if b[4]>>4 == ipv6.Version {
 			// ipv6
