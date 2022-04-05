@@ -78,6 +78,9 @@ github.com/otamoe/go-library v0.3.16 h1:TE5cagLEujcDS2NLk5xDljTSifNEQ82mDg2g/s5f
 github.com/otamoe/go-library v0.3.16/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuCCECUOAY7H4=
 github.com/otamoe/go-library v0.3.17 h1:EoWQBgdfINZ7LRNLMSofLf2WMhaIPZmYP91kJwTylU8=
 github.com/otamoe/go-library v0.3.17/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuCCECUOAY7H4=
+github.com/otamoe/go-library v0.4.1/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuCCECUOAY7H4=
+github.com/otamoe/go-library v0.4.2 h1:+P0FKIteUccn1zQS9c0W4j72AKfLEJGEG0a6d83deE8=
+github.com/otamoe/go-library v0.4.2/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuCCECUOAY7H4=
 github.com/otamoe/vptun-pb v0.3.7 h1:igX+7x12m+FPkcnYkGeTkAit0NrQAg6K8WJqX8A3O1o=
 github.com/otamoe/vptun-pb v0.3.7/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
 github.com/otamoe/vptun-pb v0.4.0 h1:/Pr8+eXgO3THH3uxA1m8eqeB8Sc+Y2bsYTMby9BDqHY=

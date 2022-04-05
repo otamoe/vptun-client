@@ -62,16 +62,18 @@ func (grpcClient *GrpcClient) Start() (err error) {
 
 	// 关闭
 	defer func() {
+		// 设置成已关闭
+		close(grpcClient.closed)
+
+		// 关闭
 		if rerr := grpcClient.Close(err); rerr != nil && err == nil {
 			err = rerr
 		}
+
 		if err == nil && grpcClient.Err() != os.ErrClosed {
 			err = grpcClient.Err()
 		}
 	}()
-
-	// 已关闭
-	defer close(grpcClient.closed)
 
 	// 打开链接
 	err = grpcClient.openStream()

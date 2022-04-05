@@ -3,7 +3,7 @@ module github.com/otamoe/vptun-client
 go 1.17
 
 require (
-	github.com/otamoe/go-library v0.3.17
+	github.com/otamoe/go-library v0.4.2
 	github.com/otamoe/vptun-pb v0.4.3
 	github.com/shirou/gopsutil/v3 v3.22.2
 	github.com/spf13/viper v1.10.1
