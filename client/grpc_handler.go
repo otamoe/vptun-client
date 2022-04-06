@@ -134,9 +134,11 @@ func (grpcHandler *GrpcHandler) startStream() (err error) {
 	defer grpcHandler.waitGroup.Done()
 	defer grpcHandler.cancel()
 	var retry uint64 = 0
+	var create bool
 	for {
 		var t *time.Timer
-		if retry == 0 {
+		if retry == 0 || create {
+			create = false
 			t = time.NewTimer(time.Second)
 		} else {
 			t = time.NewTimer(viper.GetDuration("grpc.retryInterval"))
@@ -170,6 +172,7 @@ func (grpcHandler *GrpcHandler) startStream() (err error) {
 
 			// 运行错误 client not found 重新创建 client id
 			if err != nil && strings.Index(strings.ToLower(err.Error()), "client not found") != -1 {
+				create = true
 				grpcHandler.create()
 			}
 
