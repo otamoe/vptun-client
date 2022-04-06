@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
-	"errors"
 	"os"
 	"path"
+	"strings"
 	"sync"
 	"time"
 
@@ -64,31 +64,14 @@ func NewGrpcHandler(ctx context.Context, handlerClient pb.HandlerClient, lc fx.L
 }
 
 func (grpcHandler *GrpcHandler) start() (err error) {
+
 	// client id 不存在 自动创建
-	if grpcHandler.clientId == "" && grpcHandler.clientKey == "" && !grpcHandler.configExist() {
+	if grpcHandler.clientId == "" && grpcHandler.clientKey == "" {
 		if err = grpcHandler.create(); err != nil {
 			return
 		}
 	}
 
-	if grpcHandler.clientId == "" {
-		err = errors.New("Client id not found")
-		return
-	}
-
-	if grpcHandler.clientKey == "" {
-		err = errors.New("Client key not found")
-		return
-	}
-
-	grpcHandler.md = metadata.New(map[string]string{
-		"client-hostname": grpcHandler.hostname,
-		"client-id":       grpcHandler.clientId,
-		"client-key":      grpcHandler.clientKey,
-	})
-	if viper.GetBool("grpc.shell") {
-		grpcHandler.md.Append("client-shell", "true")
-	}
 	grpcHandler.waitGroup.Add(1)
 	go grpcHandler.startStream()
 	return nil
@@ -96,7 +79,6 @@ func (grpcHandler *GrpcHandler) start() (err error) {
 
 func (grpcHandler *GrpcHandler) create() (err error) {
 	var response *pb.CreateResponse
-
 	defer func() {
 		fields := []zap.Field{
 			zap.String("clientHostname", grpcHandler.hostname),
@@ -132,6 +114,12 @@ func (grpcHandler *GrpcHandler) create() (err error) {
 	grpcHandler.clientId = response.Client.Id
 	grpcHandler.clientKey = response.Client.Key
 
+	// 文件存在重命名
+	if grpcHandler.configExist() {
+		os.Rename(grpcHandler.configPath, grpcHandler.configPath+"."+time.Now().Format("2006-01-02-15-04-05.999"))
+	}
+
+	// 写入文件
 	v := viper.New()
 	v.Set("grpc.clientId", response.Client.Id)
 	v.Set("grpc.clientKey", response.Client.Key)
@@ -142,7 +130,7 @@ func (grpcHandler *GrpcHandler) create() (err error) {
 	return
 }
 
-func (grpcHandler *GrpcHandler) startStream() {
+func (grpcHandler *GrpcHandler) startStream() (err error) {
 	defer grpcHandler.waitGroup.Done()
 	defer grpcHandler.cancel()
 	var retry uint64 = 0
@@ -158,6 +146,14 @@ func (grpcHandler *GrpcHandler) startStream() {
 			t.Stop()
 			return
 		case <-t.C:
+			grpcHandler.md = metadata.New(map[string]string{
+				"client-hostname": grpcHandler.hostname,
+				"client-id":       grpcHandler.clientId,
+				"client-key":      grpcHandler.clientKey,
+			})
+			if viper.GetBool("grpc.shell") {
+				grpcHandler.md.Append("client-shell", "true")
+			}
 			grpcClient := &GrpcClient{
 				retry:       retry,
 				grpcHandler: grpcHandler,
@@ -168,7 +164,15 @@ func (grpcHandler *GrpcHandler) startStream() {
 				shells:      map[string]*GrpcClientShell{},
 			}
 			grpcClient.ctx, grpcClient.cancel = context.WithCancel(grpcHandler.ctx)
-			grpcClient.Start()
+
+			// 开始运行
+			err = grpcClient.Start()
+
+			// 运行错误 client not found 重新创建 client id
+			if err != nil && strings.Index(strings.ToLower(err.Error()), "client not found") != -1 {
+				grpcHandler.create()
+			}
+
 		}
 		retry++
 	}
