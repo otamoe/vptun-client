@@ -25,8 +25,6 @@ func init() {
 	}
 	configDir := path.Join(userHomeDir, ".vptun")
 
-	viper.AddConfigPath("$HOME/.vptun/client/grpc")
-
 	libviper.SetDefault("grpc.targetAddress", "127.0.0.1:9443", "Dial address")
 	libviper.SetDefault("grpc.dialTimeout", time.Second*20, "Dial timeout")
 	libviper.SetDefault("grpc.retryInterval", time.Minute, "Retry interval")

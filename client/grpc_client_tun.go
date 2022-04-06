@@ -1,11 +1,16 @@
 package client
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"os/exec"
+	"runtime"
+	"strings"
 
 	pb "github.com/otamoe/vptun-pb"
 	sutilNet "github.com/shirou/gopsutil/v3/net"
+	"go.uber.org/zap"
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 	"golang.zx2c4.com/wireguard/device"
@@ -40,26 +45,63 @@ func (grpcClient *GrpcClient) setTunName() (err error) {
 	return
 }
 
+func (grpcClient *GrpcClient) runCmd(ctx context.Context, name string, args ...string) (err error) {
+	// 配置 网卡
+	cmd := exec.CommandContext(ctx, name, args...)
+	stderr := bytes.NewBuffer(nil)
+	stdout := bytes.NewBuffer(nil)
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	err = cmd.Run()
+
+	fields := []zap.Field{
+		zap.String("name", name),
+		zap.Strings("args", args),
+		zap.String("stdout", stdout.String()),
+		zap.String("stderr", stderr.String()),
+	}
+	grpcClient.logger("cmd", false, err, fields...)
+
+	if err != nil {
+		err = fmt.Errorf("error: %s %v %s", name, args, err)
+		return
+	}
+	return
+}
 func (grpcClient *GrpcClient) openTunDevice() (err error) {
 
 	// 打开 tunDevice
 	if grpcClient.tunDevice, err = tun.CreateTUN(grpcClient.tunName, device.DefaultMTU); err != nil {
-		err = fmt.Errorf("error: CreateTUN(%s): %s", grpcClient.tunName, err)
-		return
+		if strings.Index(err.Error(), "dev/net/tun") != -1 {
+			// tun 未启用 启用模块
+			grpcClient.runCmd(grpcClient.ctx, "modprobe", "tun")
+
+			// 再次打开
+			grpcClient.tunDevice, err = tun.CreateTUN(grpcClient.tunName, device.DefaultMTU)
+		}
+		if err != nil {
+			err = fmt.Errorf("error: CreateTUN(%s): %s", grpcClient.tunName, err)
+			return
+		}
 	}
 
 	// 配置 网卡
-	cmd := exec.CommandContext(grpcClient.ctx, "ifconfig", grpcClient.tunName, grpcClient.IRouteAddress.String(), "netmask", "0x"+grpcClient.IRouteSubnet.Mask.String(), "broadcast", grpcClient.IBroadcastIP.String(), "up")
-	if err = cmd.Run(); err != nil {
+	if err = grpcClient.runCmd(grpcClient.ctx, "ifconfig", grpcClient.tunName, grpcClient.IRouteAddress.String(), "netmask", "0x"+grpcClient.IRouteSubnet.Mask.String(), "broadcast", grpcClient.IBroadcastIP.String(), "up"); err != nil {
 		return
 	}
 
 	// 配置路由表
-	cmd2 := exec.CommandContext(grpcClient.ctx, "route", "add", "-net", grpcClient.IRouteSubnet.String(), "-interface", grpcClient.tunName)
-	if err = cmd2.Run(); err != nil {
-		return
+	if runtime.GOOS == "darwin" {
+		if err = grpcClient.runCmd(grpcClient.ctx, "route", "add", "-net", grpcClient.IRouteSubnet.String(), "-interface", grpcClient.tunName); err != nil {
+			return
+		}
+	} else {
+		if err = grpcClient.runCmd(grpcClient.ctx, "route", "add", "-net", grpcClient.IRouteSubnet.String(), "gw", grpcClient.IRouteAddress.String(), grpcClient.tunName); err != nil {
+			return
+		}
 	}
 	return
+
 }
 
 func (grpcClient *GrpcClient) OnTun(tunResponse *pb.TunResponse) (err error) {
@@ -120,6 +162,7 @@ func (grpcClient *GrpcClient) requestTun() (err error) {
 				}
 				continue
 			}
+
 			// 远程
 			if err = grpcClient.Request(&pb.StreamRequest{Tun: &pb.TunRequest{Data: b[4:]}}); err != nil {
 				return

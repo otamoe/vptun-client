@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -303,10 +302,15 @@ func (grpcClient *GrpcClient) Close(werr error) (rerr error) {
 
 		// 删除路由表
 		{
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-			defer cancel()
-			cmd := exec.CommandContext(ctx, "route", "delete", "-host", "10.128.0.0/9")
-			cmd.Run()
+
+			if grpcClient.IRouteSubnet != nil {
+				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+				defer cancel()
+				grpcClient.runCmd(ctx, "route", "delete", "-host", grpcClient.IRouteSubnet.String())
+				grpcClient.runCmd(ctx, "route", "delete", "-host", grpcClient.IRouteSubnet.String())
+				grpcClient.runCmd(ctx, "route", "delete", "-net", grpcClient.IRouteSubnet.String())
+				grpcClient.runCmd(ctx, "route", "delete", "-net", grpcClient.IRouteSubnet.String())
+			}
 		}
 	}
 

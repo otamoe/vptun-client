@@ -41,7 +41,7 @@ func NewGrpcHandler(ctx context.Context, handlerClient pb.HandlerClient, lc fx.L
 		return
 	}
 	grpcHandler = &GrpcHandler{
-		configPath:    path.Join(userHomeDir, ".vptun/client/grpc/config.yaml"),
+		configPath:    path.Join(userHomeDir, ".vptun/client/config.yaml"),
 		logger:        liblogger.Get("grpc"),
 		handlerClient: handlerClient,
 		clientId:      viper.GetString("grpc.clientId"),
