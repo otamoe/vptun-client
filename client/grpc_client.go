@@ -83,14 +83,16 @@ func (grpcClient *GrpcClient) Start() (err error) {
 		return
 	}
 
-	// 设置网卡名
-	if err = grpcClient.setTunName(); err != nil {
-		return
-	}
+	if grpcClient.RouteAddress != "" {
+		// 设置网卡名
+		if err = grpcClient.setTunName(); err != nil {
+			return
+		}
 
-	// 打开网卡驱动
-	if err = grpcClient.openTunDevice(); err != nil {
-		return
+		// 打开网卡驱动
+		if err = grpcClient.openTunDevice(); err != nil {
+			return
+		}
 	}
 
 	// 运行请求
@@ -99,13 +101,18 @@ func (grpcClient *GrpcClient) Start() (err error) {
 	// 运行响应
 	go grpcClient.runResponse()
 
+	// Ping
+	go grpcClient.requestPing()
+
 	// 定时请求 status
 	if viper.GetDuration("grpc.status") != 0 {
 		go grpcClient.requestStatus()
 	}
 
 	// 运行 tun
-	go grpcClient.requestTun()
+	if grpcClient.RouteAddress != "" {
+		go grpcClient.requestTun()
+	}
 
 	// 等待
 	<-grpcClient.ctx.Done()
@@ -124,30 +131,31 @@ func (grpcClient *GrpcClient) openStream() (err error) {
 		return
 	}
 
-	// 得到 routeAddress
-	grpcClient.RouteAddress = strings.Join(grpcClient.MD.Get("client-route-address"), ",")
-	if grpcClient.IRouteAddress = net.ParseIP(grpcClient.RouteAddress); grpcClient.IRouteAddress == nil {
-		err = fmt.Errorf("error: routing address %s", grpcClient.RouteAddress)
-		return
-	}
-	// 得到 routeSubnet
-	grpcClient.RouteSubnet = strings.Join(grpcClient.MD.Get("client-route-subnet"), ",")
-	if _, grpcClient.IRouteSubnet, err = net.ParseCIDR(grpcClient.RouteSubnet); err != nil {
-		err = fmt.Errorf("error: routing subnet %s %s", grpcClient.RouteSubnet, err)
-		return
-	}
-
-	// 广播 ip
-	grpcClient.IBroadcastIP = make(net.IP, len(grpcClient.IRouteSubnet.IP))
-	copy(grpcClient.IBroadcastIP, grpcClient.IRouteSubnet.IP)
-	for i, _ := range grpcClient.IRouteSubnet.IP {
-		if i >= len(grpcClient.IRouteSubnet.Mask) {
-			break
+	if grpcClient.RouteAddress = strings.Join(grpcClient.MD.Get("client-route-address"), ","); grpcClient.RouteAddress != "" {
+		// 得到 routeAddress
+		if grpcClient.IRouteAddress = net.ParseIP(grpcClient.RouteAddress); grpcClient.IRouteAddress == nil {
+			err = fmt.Errorf("error: routing address %s", grpcClient.RouteAddress)
+			return
 		}
-		grpcClient.IBroadcastIP[i] = grpcClient.IBroadcastIP[i] | ^grpcClient.IRouteSubnet.Mask[i]
-	}
-	grpcClient.BroadcastIP = grpcClient.IBroadcastIP.String()
 
+		// 得到 routeSubnet
+		grpcClient.RouteSubnet = strings.Join(grpcClient.MD.Get("client-route-subnet"), ",")
+		if _, grpcClient.IRouteSubnet, err = net.ParseCIDR(grpcClient.RouteSubnet); err != nil {
+			err = fmt.Errorf("error: routing subnet %s %s", grpcClient.RouteSubnet, err)
+			return
+		}
+
+		// 广播 ip
+		grpcClient.IBroadcastIP = make(net.IP, len(grpcClient.IRouteSubnet.IP))
+		copy(grpcClient.IBroadcastIP, grpcClient.IRouteSubnet.IP)
+		for i, _ := range grpcClient.IRouteSubnet.IP {
+			if i >= len(grpcClient.IRouteSubnet.Mask) {
+				break
+			}
+			grpcClient.IBroadcastIP[i] = grpcClient.IBroadcastIP[i] | ^grpcClient.IRouteSubnet.Mask[i]
+		}
+		grpcClient.BroadcastIP = grpcClient.IBroadcastIP.String()
+	}
 	return
 }
 
@@ -167,6 +175,13 @@ func (grpcClient *GrpcClient) runRequest() (err error) {
 			err = grpcClient.handlerStreamClient.Send(request)
 
 			fields := []zap.Field{}
+			if request.Ping != nil {
+				fields = append(
+					fields,
+					zap.Bool("requestPingPong", request.Ping.Pong),
+				)
+			}
+
 			if request.Tun != nil {
 				fields = append(
 					fields,
@@ -211,6 +226,16 @@ func (grpcClient *GrpcClient) runResponse() (err error) {
 
 		fields := []zap.Field{}
 		if response != nil {
+			if response.Ping != nil {
+				fields = append(
+					fields,
+					zap.Bool("responsePingPong", response.Ping.Pong),
+				)
+				if err == nil {
+					err = grpcClient.OnPing(response.Ping)
+				}
+			}
+
 			if response.Tun != nil {
 				fields = append(
 					fields,

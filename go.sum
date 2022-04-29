@@ -81,6 +81,8 @@ github.com/otamoe/go-library v0.3.17/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuC
 github.com/otamoe/go-library v0.4.1/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuCCECUOAY7H4=
 github.com/otamoe/go-library v0.4.2 h1:+P0FKIteUccn1zQS9c0W4j72AKfLEJGEG0a6d83deE8=
 github.com/otamoe/go-library v0.4.2/go.mod h1:9RFRzlV31S/HVF5DqSRPiF9llHfu4rbuCCECUOAY7H4=
+github.com/otamoe/go-library v0.4.4 h1:dZw/PzewrJXAP6wQplxc0ozGyZI6ImjwvP4q86Ngkkk=
+github.com/otamoe/go-library v0.4.4/go.mod h1:7CGFG3UDfZd9aW2141aYCEvJkfn9Hj9AjkbRI1NT7I8=
 github.com/otamoe/vptun-pb v0.3.7 h1:igX+7x12m+FPkcnYkGeTkAit0NrQAg6K8WJqX8A3O1o=
 github.com/otamoe/vptun-pb v0.3.7/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
 github.com/otamoe/vptun-pb v0.4.0 h1:/Pr8+eXgO3THH3uxA1m8eqeB8Sc+Y2bsYTMby9BDqHY=
@@ -89,6 +91,14 @@ github.com/otamoe/vptun-pb v0.4.1 h1:3OHAYhHOJmewJVYndCfEqxoIUVatndSM0kCORx70aV8
 github.com/otamoe/vptun-pb v0.4.1/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
 github.com/otamoe/vptun-pb v0.4.3 h1:hzJrtTJft1kblhBgO6KBANDNlKPpmaShy75J5t4lqLs=
 github.com/otamoe/vptun-pb v0.4.3/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
+github.com/otamoe/vptun-pb v0.5.0 h1:TtUEOBQFZfSoVj3K9mMSZJs51ksHPPK7Fa239cB6X08=
+github.com/otamoe/vptun-pb v0.5.0/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
+github.com/otamoe/vptun-pb v0.5.1 h1:Fmi5BVb2pnAMN3op7gIrZdqE4oz/gs2cREIMdtp0oYk=
+github.com/otamoe/vptun-pb v0.5.1/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
+github.com/otamoe/vptun-pb v0.5.2 h1:Zta0w+Ip7qjvvqbcQi/8Zuhood1dvoZ2w1HPeqZj2z0=
+github.com/otamoe/vptun-pb v0.5.2/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
+github.com/otamoe/vptun-pb v0.5.3 h1:4AXXKtw/vTzpYI57uHSVKuJEhI14D5wmnZTPxQlthps=
+github.com/otamoe/vptun-pb v0.5.3/go.mod h1:bG9LmwSM/Us7hmVwgbakiDTT2YRqnPbomQ3tmvVxLCA=
 github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhECwM=
 github.com/pelletier/go-toml v1.9.4/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
@@ -272,6 +282,8 @@ gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8
 gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=
 gopkg.in/ini.v1 v1.66.2 h1:XfR1dOYubytKy4Shzc2LHrrGhU0lDCfDGG1yLPmpgsI=
 gopkg.in/ini.v1 v1.66.2/go.mod h1:pNLf8WUiyNEtQjuu5G5vTm06TEv9tsIgeAvK8hOrP4k=
+gopkg.in/natefinch/lumberjack.v2 v2.0.0 h1:1Lc07Kr7qY4U2YPouBjpCLxpiyxIVoxqXgkXLknAOE8=
+gopkg.in/natefinch/lumberjack.v2 v2.0.0/go.mod h1:l0ndWWf7gzL7RNwBG7wST/UCcT4T24xpD6X8LsfU/+k=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.3/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.8/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=

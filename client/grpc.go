@@ -26,10 +26,10 @@ func init() {
 	configDir := path.Join(userHomeDir, ".vptun")
 
 	libviper.SetDefault("grpc.targetAddress", "127.0.0.1:9443", "Dial address")
-	libviper.SetDefault("grpc.dialTimeout", time.Second*20, "Dial timeout")
+	libviper.SetDefault("grpc.dialTimeout", time.Second*60, "Dial timeout")
 	libviper.SetDefault("grpc.retryInterval", time.Minute, "Retry interval")
-	libviper.SetDefault("grpc.time", time.Minute*2, "Ping interval")
-	libviper.SetDefault("grpc.timeout", time.Second*15, "Ping timeout")
+	libviper.SetDefault("grpc.time", time.Minute*3, "Ping interval")
+	libviper.SetDefault("grpc.timeout", time.Second*30, "Ping timeout")
 
 	libviper.SetDefault("grpc.tlsCA", path.Join(configDir, "client/grpc/ca.crt"), "Certification authority")
 	libviper.SetDefault("grpc.tlsCrt", path.Join(configDir, "client/grpc/client.crt"), "Credentials")

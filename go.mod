@@ -3,8 +3,8 @@ module github.com/otamoe/vptun-client
 go 1.17
 
 require (
-	github.com/otamoe/go-library v0.4.2
-	github.com/otamoe/vptun-pb v0.4.3
+	github.com/otamoe/go-library v0.4.4
+	github.com/otamoe/vptun-pb v0.5.3
 	github.com/shirou/gopsutil/v3 v3.22.2
 	github.com/spf13/viper v1.10.1
 	go.uber.org/atomic v1.9.0
@@ -40,5 +40,6 @@ require (
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

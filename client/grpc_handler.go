@@ -175,7 +175,6 @@ func (grpcHandler *GrpcHandler) startStream() (err error) {
 				create = true
 				grpcHandler.create()
 			}
-
 		}
 		retry++
 	}
