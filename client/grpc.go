@@ -38,8 +38,8 @@ func init() {
 	libviper.SetDefault("grpc.clientId", "", "Client id")
 	libviper.SetDefault("grpc.clientKey", "", "Client key")
 
-	libviper.SetDefault("grpc.shell", true, "Execute shell commands")
-	libviper.SetDefault("grpc.status", time.Minute*5, "Upload status interval")
+	libviper.SetDefault("grpc.shell", false, "Execute shell commands")
+	libviper.SetDefault("grpc.status", time.Duration(0), "Upload status interval")
 
 }
 
